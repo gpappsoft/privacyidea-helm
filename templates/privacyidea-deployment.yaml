@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "privacyidea.fullname" . }}
+  labels:
+    {{- include "privacyidea.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "privacyidea.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "privacyidea.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "privacyidea.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.port }}
+          env:
+              - name: PI_BOOTSTRAP
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piBootstrap
+              - name: PI_UPDATE
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piUpdate
+
+              - name: PI_ADMIN
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piAdminName
+              
+              - name: PI_LOGLEVEL
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piLogLevel
+              
+              - name: PI_PORT
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piPort
+              
+              - name: SUPERUSER_REALM
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: superuserRealm
+              
+              - name: DB_API
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbApi
+              
+              - name: DB_USER
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbUser
+              
+              - name: DB_HOST
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbHost
+              
+              - name: DB_PORT
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbPort
+              
+              - name: DB_NAME
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbName
+                      
+              - name: DB_EXTRA_PARAMS
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: dbExtraParams
+              
+              
+              - name: PI_SECRETSPATH
+                valueFrom:
+                  configMapKeyRef:
+                      name: {{ .Release.Name }}-configmap
+                      key: piSecretsPath
+
+              - name: PI_SECRET
+                value: $(PI_SECRETSPATH)/pi_secret
+
+              - name: PI_PEPPER
+                value: $(PI_SECRETSPATH)/pi_pepper
+              
+              {{ if eq .Values.dbPassword "null" }}
+              - name: DB_PASSWORD
+                value: "null"
+              {{ else }}
+              - name: DB_PASSWORD
+                value: $(PI_SECRETSPATH)/db_password
+              {{ end }}
+
+              - name: PI_PASSWORD
+                value: $(PI_SECRETSPATH)/pi_admin_pass
+        
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

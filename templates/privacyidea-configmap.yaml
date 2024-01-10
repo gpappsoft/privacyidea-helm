@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+    piPort: "{{ .Values.piPort | default "8080" }}"
+    piAdminName: "{{ .Values.piAdminName | default "admin" }}"
+    piBootstrap: "{{ .Values.piBootstrap | default "true" }}"
+    piUpdate: "{{ .Values.piUpdate | default "false" }}"
+    piLogLevel: "{{ .Values.piLogLevel | default "INFO"| upper }}"
+    superuserRealm: "{{ .Values.piBootstrap | default "admin,helpdesk" }}"
+    dbApi: "{{ .Values.dbApi }}"
+    dbUser: "{{ .Values.dbUser }}"
+    dbHost: "{{ .Values.dbHost | default {{ .Release.Name }}-mariadb.default.svc.cluster.local }}"
+    dbPort: "{{ .Values.dbPort }}"
+    dbName: "{{ .Values.dbName | default "pi" }}"
+    dbPassword: "{{ .Values.dbPassword | default "null" }}"
+    dbExtraParams: "{{ .Values.dbExtraParams }}"
+    piSecretsPath: "{{ .Values.piSecretPath | default "/etc/privacyidea/secrets"}}"
