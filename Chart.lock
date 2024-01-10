@@ -2,5 +2,8 @@ dependencies:
 - name: mariadb
   repository: https://charts.bitnami.com/bitnami
   version: 15.0.1
-digest: sha256:54f9f5f82a907ff7f73c389725ae31a1e1d8610c107c323a82eac6e909bef72b
-generated: "2024-01-10T09:58:17.211270319+01:00"
+- name: nginx
+  repository: https://charts.bitnami.com/bitnami
+  version: 15.6.0
+digest: sha256:88e24a526a2a326f2b250977f3f1bbffa1645744923fa97aadd95f9e30bd57ea
+generated: "2024-01-10T13:12:24.812230085+01:00"

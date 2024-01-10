@@ -52,79 +52,83 @@ spec:
               - name: PI_BOOTSTRAP
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piBootstrap
               - name: PI_UPDATE
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piUpdate
 
               - name: PI_ADMIN
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piAdminName
               
               - name: PI_LOGLEVEL
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piLogLevel
               
               - name: PI_PORT
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piPort
               
               - name: SUPERUSER_REALM
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: superuserRealm
               
               - name: DB_API
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbApi
               
               - name: DB_USER
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbUser
               
+              {{ if .Values.dbHost }}
               - name: DB_HOST
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbHost
-              
+              {{ else }}
+              - name: DB_HOST
+                value: {{ .Release.Name }}-mariadb.default.svc.cluster.local
+              {{ end }}
+             
               - name: DB_PORT
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbPort
               
               - name: DB_NAME
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbName
                       
               - name: DB_EXTRA_PARAMS
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: dbExtraParams
-              
               
               - name: PI_SECRETSPATH
                 valueFrom:
                   configMapKeyRef:
-                      name: {{ .Release.Name }}-configmap
+                      name: configmap
                       key: piSecretsPath
 
               - name: PI_SECRET

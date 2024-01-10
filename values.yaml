@@ -32,7 +32,7 @@ piPort:
 # set the default db api module for sqlalchemy
 dbApi: "mysql+pymysql"
 # set the database user
-dbUser: "pi"
+dbUser: pi
 # set the database password. Use 'null' to use a sqlite database.
 dbPassword: pi
 # set the database host
@@ -136,7 +136,7 @@ autoscaling:
 volumes: 
  - name: pisecrets
    secret:
-     secretName:  privacyidea-secrets
+     secretName: secrets
      items:
       - key: piAdminPassword
         path: "pi_admin_pass"
