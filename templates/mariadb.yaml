@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mariadb
+  labels:
+    app: mariadb
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: {{ .Release.Name }}-mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: mariadb
+        image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+        imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: {{ .Values.mariadb.auth.rootPassword }}
+        - name: MARIADB_USER
+          value: {{ .Values.mariadb.auth.username }}
+        - name: MARIADB_PASSWORD
+          value: {{ .Values.mariadb.auth.password }}
+        - name: MARIADB_DATABASE
+          value: {{ .Values.mariadb.auth.database }}
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mariadb-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-mariadb-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-mariadb-pvc
+  labels:
+    app: mariadb
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mariadb.persistence.size }}
+

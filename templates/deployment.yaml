@@ -1,172 +1,92 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "privacyidea.fullname" . }}
+  name: {{ .Release.Name }}-privacyidea
   labels:
-    {{- include "privacyidea.labels" . | nindent 4 }}
+    app: privacyidea
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.privacyidea.replicaCount }}
   selector:
     matchLabels:
-      {{- include "privacyidea.selectorLabels" . | nindent 6 }}
+      app: privacyidea
+      release: {{ .Release.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "privacyidea.labels" . | nindent 8 }}
-	{{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        app: privacyidea
+        release: {{ .Release.Name }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "privacyidea.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.port }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.port }}
-          env:
-              - name: PI_BOOTSTRAP
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piBootstrap
-              - name: PI_UPDATE
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piUpdate
-
-              - name: PI_ADMIN
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piAdminName
-              
-              - name: PI_LOGLEVEL
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piLogLevel
-              
-              - name: PI_PORT
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piPort
-              
-              - name: SUPERUSER_REALM
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: superuserRealm
-              
-              - name: DB_API
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbApi
-              
-              - name: DB_USER
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbUser
-              
-              {{ if .Values.dbHost }}
-              - name: DB_HOST
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbHost
-              {{ else }}
-              - name: DB_HOST
-                value: {{ .Release.Name }}-mariadb.default.svc.cluster.local
-              {{ end }}
-             
-              - name: DB_PORT
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbPort
-              
-              - name: DB_NAME
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbName
-                      
-              - name: DB_EXTRA_PARAMS
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: dbExtraParams
-              
-              - name: PI_SECRETSPATH
-                valueFrom:
-                  configMapKeyRef:
-                      name: configmap
-                      key: piSecretsPath
-
-              - name: PI_SECRET
-                value: $(PI_SECRETSPATH)/pi_secret
-
-              - name: PI_PEPPER
-                value: $(PI_SECRETSPATH)/pi_pepper
-              
-              {{ if eq .Values.dbPassword "null" }}
-              - name: DB_PASSWORD
-                value: "null"
-              {{ else }}
-              - name: DB_PASSWORD
-                value: $(PI_SECRETSPATH)/db_password
-              {{ end }}
-
-              - name: PI_PASSWORD
-                value: $(PI_SECRETSPATH)/pi_admin_pass
-        
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+      - name: privacyidea
+        image: "{{ .Values.privacyidea.image.repository }}:{{ .Values.privacyidea.image.tag }}"
+        imagePullPolicy: {{ .Values.privacyidea.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.privacyidea.service.port }}
+        env:
+        - name: PI_ADMIN
+          value: {{ .Values.privacyidea.env.PI_ADMIN }}
+        - name: PI_ADMIN_PASS
+          value: {{ .Values.privacyidea.env.PI_ADMIN_PASS }}
+        - name: PI_ADDRESS
+          value: "0.0.0.0"
+        - name: PI_PORT
+          value: "{{ .Values.privacyidea.service.port }}"
+        - name: PI_LOGLEVEL
+          value: {{ .Values.privacyidea.env.PI_LOGLEVEL }}
+        - name: PI_PEPPER
+          value: {{ .Values.privacyidea.env.PI_PEPPER }}
+        - name: PI_SECRET
+          value: {{ .Values.privacyidea.env.PI_SECRET }}
+        - name: SUPERUSER_REALM
+          value: {{ .Values.privacyidea.env.SUPERUSER_REALM }}
+        - name: SQLALCHEMY_ENGINE_OPTIONS
+          value: "{{ .Values.privacyidea.env.SQLALCHEMY_ENGINE_OPTIONS }}"
+        - name: REDIS_URL
+          value: "redis://:{{ .Values.redis.password }}@{{ .Release.Name }}-redis-master:6379/0"
+        #- name: PI_ENCKEY
+        #  value: {{ .Values.privacyidea.env.PI_ENCKEY }}
+        - name: DB_HOST
+          value: {{ .Release.Name }}-mariadb
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: {{ .Values.mariadb.auth.database }}
+        - name: DB_USER
+          value: {{ .Values.mariadb.auth.username }}
+        - name: DB_PASSWORD
+          value: {{ .Values.mariadb.auth.password }}
+        - name: DB_API
+          value: {{ .Values.privacyidea.env.DB_API }}
+        - name: DB_EXTRA_PARAMS
+          value: {{ .Values.privacyidea.env.DB_EXTRA_PARAMS }}
+        resources:
+{{ toYaml .Values.privacyidea.resources | indent 10 }}
+        volumeMounts:
+        - name: privacyidea-data
+          mountPath: /privacyidea/etc/persistent/
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      - name: privacyidea-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-piconfig-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-piconfig-pvc
+  labels:
+    app: privacyidea
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.privacyidea.persistence.size }}
+
+
