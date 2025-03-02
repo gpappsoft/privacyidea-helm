@@ -1,6 +1,6 @@
 apiVersion: v2
 name: privacyidea
 description: A Helm chart for deploying PrivacyIDEA with MariaDB and Redis
-version: 0.3.0
+version: 1.0.0
 appVersion: "3.11"
 icon: https://www.privacyidea.org/wp-content/uploads/2016/06/privacyIDEA-240px@2x.png

@@ -110,7 +110,8 @@ minikube delete
    ```bash
    kubectl logs <pod-name>
    ```
-2. **Database connection issues**: Ensure that the MariaDB pod is running and that the connection string in the `privacyidea.cfg` file is correct.
+2. **Database connection issues**: Ensure that the MariaDB pod is running.
+
 3. **Persistent Volume issues**: If you encounter issues with persistent volumes, ensure that Minikube's storage class is configured correctly. You can check the persistent volumes and claims:
    ```bash
    kubectl get pv
