@@ -55,6 +55,25 @@ mariadb:
     enabled: true
     size: 10Gi
 
+# Enable or disable ingress
+radius:
+  enabled: true
+  image:
+    repository: gpappsoft/privacyidea-freeradius
+    tag: "3.4.3-1"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 1812
+  env:
+    #piHost:
+    #piPort: 
+    piRealm:
+    piResconf:
+    piSslcheck: False
+    piTimeout: 10
+
 # Redis Configuration
 redis:
   enabled: true

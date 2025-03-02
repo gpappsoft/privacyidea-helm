@@ -1,0 +1,20 @@
+{{- if .Values.radius.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-radius
+  labels:
+    app: radius
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.radius.service.type }}
+  ports:
+  - port: {{ .Values.radius.service.port }}
+    targetPort: {{ .Values.radius.service.port }}
+    protocol: UDP
+  selector:
+    app: radius
+    release: {{ .Release.Name }}
+{{- end }}

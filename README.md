@@ -34,6 +34,7 @@ This will deploy the following components:
 - PrivacyIDEA application
 - MariaDB database
 - Redis cache
+- Radius with privacyIDEA plugin (optional - default is disabled)
 
 #### **3. Verify the Deployment**
 Check if the pods are running:
@@ -85,9 +86,20 @@ Now, you can access PrivacyIDEA at:
 http://privacyidea.local
 ```
 
+
+### **5. Enable Radius with privacyIDEA plugin**
+
+Edit ```values.yaml``` 
+
+```yaml
+...
+# Enable or disable ingress
+radius:
+  enabled: true
+```
 ---
 
-### **5. Clean Up**
+### **6. Clean Up**
 When you're done testing, you can delete the Helm release:
 ```bash
 helm uninstall privacyidea
@@ -120,4 +132,4 @@ minikube delete
 
 ---
 
-By following these steps, you can successfully deploy the PrivacyIDEA stack with MariaDB and Redis on Minikube using the Helm chart. This setup is ideal for local development and testing.
+

@@ -1,0 +1,35 @@
+{{- if .Values.radius.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-radius
+  labels:
+    app: radius
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.radius.replicaCount }}
+  selector:
+    matchLabels:
+      app: radius
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: radius
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: radius
+        image: "{{ .Values.radius.image.repository }}:{{ .Values.radius.image.tag }}"
+        imagePullPolicy: {{ .Values.radius.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.radius.service.port }}
+        env: 
+        - name: RADIUS_PI_HOST
+          value: "http://{{ .Release.Name }}-privacyidea:{{ .Values.privacyidea.service.port }}"
+        - name: RADIUS_PI_SSLCHECK
+          value: "{{ .Values.radius.env.piSslcheck }}"
+     
+{{- end }}
