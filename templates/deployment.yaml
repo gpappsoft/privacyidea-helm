@@ -44,10 +44,12 @@ spec:
           value: {{ .Values.privacyidea.env.superuserRealm }}
         - name: SQLALCHEMY_ENGINE_OPTIONS
           value: "{{ .Values.privacyidea.env.SqlalchemyEngineOptions}}"
-        - name: REDIS_URL
+        - name: PI_JOB_QUEUE_CLASS 
+          value: "privacyidea.lib.queues.huey_queue.HueyQueue"
+        - name: PI_JOB_QUEUE_URL
           value: "redis://:{{ .Values.redis.password }}@{{ .Release.Name }}-redis-master:6379/0"
-        #- name: PI_ENCKEY
-        #  value: {{ .Values.privacyidea.env.piEncykey }}
+        - name: PI_ENCKEY
+          value: {{ .Values.privacyidea.env.piEncykey }}
         - name: DB_HOST
           value: {{ .Release.Name }}-mariadb
         - name: DB_PORT
