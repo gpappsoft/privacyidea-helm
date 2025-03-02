@@ -55,9 +55,9 @@ mariadb:
     enabled: true
     size: 10Gi
 
-# Enable or disable ingress
+# Enable or disable radius
 radius:
-  enabled: true
+  enabled: false
   image:
     repository: gpappsoft/privacyidea-freeradius
     tag: "3.4.3-1"
