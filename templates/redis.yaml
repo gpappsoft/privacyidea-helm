@@ -37,20 +37,4 @@ spec:
       - name: redis-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-redis-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-redis-pvc
-  labels:
-    app: redis
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.redis.persistence.size }}
 {{- end }}

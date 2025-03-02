@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-privacyidea
+  name: {{ .Release.Name }}-app
   labels:
     app: privacyidea
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
@@ -25,33 +25,33 @@ spec:
         imagePullPolicy: {{ .Values.privacyidea.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.privacyidea.service.port }}
-        env:
+        env: 
         - name: PI_ADMIN
-          value: {{ .Values.privacyidea.env.PI_ADMIN }}
+          value: {{ .Values.privacyidea.env.piAdmin }}
         - name: PI_ADMIN_PASS
-          value: {{ .Values.privacyidea.env.PI_ADMIN_PASS }}
+          value: {{ .Values.privacyidea.env.piAdminPass }}
         - name: PI_ADDRESS
           value: "0.0.0.0"
         - name: PI_PORT
           value: "{{ .Values.privacyidea.service.port }}"
         - name: PI_LOGLEVEL
-          value: {{ .Values.privacyidea.env.PI_LOGLEVEL }}
+          value: {{ .Values.privacyidea.env.piLoglevel }}
         - name: PI_PEPPER
-          value: {{ .Values.privacyidea.env.PI_PEPPER }}
+          value: {{ .Values.privacyidea.env.piPepper }}
         - name: PI_SECRET
-          value: {{ .Values.privacyidea.env.PI_SECRET }}
+          value: {{ .Values.privacyidea.env.piSecret }}
         - name: SUPERUSER_REALM
-          value: {{ .Values.privacyidea.env.SUPERUSER_REALM }}
+          value: {{ .Values.privacyidea.env.superuserRealm }}
         - name: SQLALCHEMY_ENGINE_OPTIONS
-          value: "{{ .Values.privacyidea.env.SQLALCHEMY_ENGINE_OPTIONS }}"
+          value: "{{ .Values.privacyidea.env.SqlalchemyEngineOptions}}"
         - name: REDIS_URL
           value: "redis://:{{ .Values.redis.password }}@{{ .Release.Name }}-redis-master:6379/0"
         #- name: PI_ENCKEY
-        #  value: {{ .Values.privacyidea.env.PI_ENCKEY }}
+        #  value: {{ .Values.privacyidea.env.piEncykey }}
         - name: DB_HOST
           value: {{ .Release.Name }}-mariadb
         - name: DB_PORT
-          value: "3306"
+          value: {{ .Values.privacyidea.env.dbHost | default "3306" | quote }}
         - name: DB_NAME
           value: {{ .Values.mariadb.auth.database }}
         - name: DB_USER
@@ -59,9 +59,9 @@ spec:
         - name: DB_PASSWORD
           value: {{ .Values.mariadb.auth.password }}
         - name: DB_API
-          value: {{ .Values.privacyidea.env.DB_API }}
+          value: {{ .Values.privacyidea.env.dbApi }}
         - name: DB_EXTRA_PARAMS
-          value: {{ .Values.privacyidea.env.DB_EXTRA_PARAMS }}
+          value: {{ .Values.privacyidea.env.dbExtraParams }}
         resources:
 {{ toYaml .Values.privacyidea.resources | indent 10 }}
         volumeMounts:
@@ -72,21 +72,5 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-piconfig-pvc
 
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-piconfig-pvc
-  labels:
-    app: privacyidea
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.privacyidea.persistence.size }}
 
 

@@ -1,4 +1,6 @@
-### Work in progress
+> [!Important] 
+> This is a first version of the chart, which will deploy a basic privacyIDEA stack. 
+> Do not use for production!
 
 ---
 
@@ -12,6 +14,7 @@
 4. **Enable Ingress (Optional)**: If you want to expose PrivacyIDEA using an Ingress, enable the Ingress addon in Minikube.
    ```bash
    minikube addons enable ingress
+   minikube addons enable ingress-dns
    ```
 
 ---
@@ -60,33 +63,17 @@ minikube service privacyidea-privacyidea
 This will open the PrivacyIDEA application in your default browser.
 
 ##### **Method 3: Use Ingress (Optional)**
-If you enabled the Ingress addon, you can create an Ingress resource to expose PrivacyIDEA. Add the following to your `templates/ingress.yaml` file:
+If you enabled the Ingress addon, you can create an Ingress resource to expose PrivacyIDEA. Enable ingress in the `values.yaml` file:
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ .Release.Name }}-privacyidea-ingress
-  labels:
-    app: privacyidea
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: privacyidea.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-privacyidea
-            port:
-              number: 80
+...
+# Enable or disable ingress
+ingress:
+  enabled: true
 ```
+
+Configure ingress in `templates/ingress.yamnl`
+
 
 Add the following line to your `/etc/hosts` file to map `privacyidea.local` to the Minikube IP:
 ```bash

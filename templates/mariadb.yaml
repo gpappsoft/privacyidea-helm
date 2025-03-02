@@ -1,3 +1,4 @@
+{{- if .Values.mariadb.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -42,20 +43,4 @@ spec:
       - name: mariadb-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-mariadb-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-mariadb-pvc
-  labels:
-    app: mariadb
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.mariadb.persistence.size }}
-
+{{- end }}
