@@ -44,7 +44,7 @@ mariadb:
   enabled: true
   image:
     repository: mariadb
-    tag: "10.6"
+    tag: "11.7.2"
     pullPolicy: IfNotPresent
   auth:
     rootPassword: "rootpassword"
@@ -55,12 +55,31 @@ mariadb:
     enabled: true
     size: 10Gi
 
+# Enable or disable radius
+radius:
+  enabled: false
+  image:
+    repository: gpappsoft/privacyidea-freeradius
+    tag: "3.4.3-1"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 1812
+  env:
+    #piHost:
+    #piPort: 
+    piRealm:
+    piResconf:
+    piSslcheck: False
+    piTimeout: 10
+
 # Redis Configuration
 redis:
   enabled: true
   image:
     repository: redis
-    tag: "6"
+    tag: "7.4.2"
     pullPolicy: IfNotPresent
   password: "privacyidea"
   persistence:
