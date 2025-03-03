@@ -1,6 +1,6 @@
 > [!Important] 
 > This is a first version of the chart, which will deploy a basic privacyIDEA stack. 
-> Do not use for production!
+> No configmaps and no secrets. Do not use for production!
 
 ---
 
@@ -33,8 +33,9 @@ helm install privacyidea ./privacyidea-chart
 This will deploy the following components:
 - PrivacyIDEA application
 - MariaDB database
-- Redis cache
-- Radius with privacyIDEA plugin (optional - default is disabled)
+- Radius with privacyIDEA plugin (optional - disabled by default)
+- Redis cache (optional - disabled by default)
+
 
 #### **3. Verify the Deployment**
 Check if the pods are running:
@@ -93,13 +94,24 @@ Edit ```values.yaml```
 
 ```yaml
 ...
-# Enable or disable ingress
+# Enable or disable radius
 radius:
+  enabled: true
+```
+
+### **6. Enable Radius with privacyIDEA plugin**
+
+Edit ```values.yaml``` 
+
+```yaml
+...
+# Enable or disable redis
+redis:
   enabled: true
 ```
 ---
 
-### **6. Clean Up**
+### **7. Clean Up**
 When you're done testing, you can delete the Helm release:
 ```bash
 helm uninstall privacyidea
