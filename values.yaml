@@ -2,7 +2,7 @@
 privacyidea:
   image:
     repository: gpappsoft/privacyidea-docker
-    tag: "3.11.2"
+    tag: "3.11.3"
     pullPolicy: IfNotPresent
   replicaCount: 1
   service:
