@@ -1,3 +1,9 @@
+## ⚠️ Archived
+
+This project is no longer actively maintained and is kept read-only for reference. Please use the official Docker build from the privacyIDEA project going forward: https://github.com/privacyidea/privacyidea
+
+Thanks to everyone who used this project and provided feedback!
+
 > [!Important] 
 > This is a first version of the chart, which will deploy a basic privacyIDEA stack. 
 > No configmaps and no secrets. Do not use for production!
